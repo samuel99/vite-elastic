@@ -34,7 +34,7 @@ const config: SearchDriverOptions = {
     result_fields: {
       title: { raw: {} },
     },
-    search_fields: {},
+    search_fields: { title: {} },
     disjunctiveFacets: [""],
     facets: {},
   },
