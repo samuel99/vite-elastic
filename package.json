@@ -12,6 +12,10 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "@elastic/react-search-ui": "^1.19.1",
+    "@elastic/react-search-ui-views": "^1.19.1",
+    "@elastic/search-ui": "^1.19.1",
+    "@elastic/search-ui-app-search-connector": "^1.19.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

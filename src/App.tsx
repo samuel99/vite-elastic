@@ -1,34 +1,81 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import "./App.css";
+import AppSearchAPIConnector from "@elastic/search-ui-app-search-connector";
+import React from "react";
+import {
+  ErrorBoundary,
+  Facet,
+  SearchProvider,
+  SearchBox,
+  Results,
+  PagingInfo,
+  ResultsPerPage,
+  Paging,
+  WithSearch,
+} from "@elastic/react-search-ui";
+import {
+  BooleanFacet,
+  Layout,
+  SingleLinksFacet,
+  SingleSelectFacet,
+} from "@elastic/react-search-ui-views";
+import "@elastic/react-search-ui-views/lib/styles/styles.css";
+import { SearchDriverOptions } from "@elastic/search-ui";
 
-function App() {
-  const [count, setCount] = useState(0);
+const connector = new AppSearchAPIConnector({
+  searchKey: "search-pds1q8du84c8571jugeax73e",
+  engineName: "national-parks-demo",
+  endpointBase: "https://testing-4a6421.ent.westeurope.azure.elastic-cloud.com",
+});
 
+const config: SearchDriverOptions = {
+  alwaysSearchOnInitialLoad: true,
+  apiConnector: connector,
+  hasA11yNotifications: true,
+  searchQuery: {
+    result_fields: {
+      title: { raw: {} },
+    },
+    search_fields: {},
+    disjunctiveFacets: [""],
+    facets: {},
+  },
+};
+
+export default function App() {
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </div>
+    <SearchProvider config={config}>
+      <WithSearch
+        mapContextToProps={({ wasSearched }) => ({
+          wasSearched,
+        })}
+      >
+        {({ wasSearched }) => {
+          return (
+            <div className="App">
+              <ErrorBoundary>
+                <Layout
+                  header={<SearchBox debounceLength={0} />}
+                  sideContent={<div></div>}
+                  bodyContent={
+                    <Results
+                      titleField="title"
+                      urlField="nps_link"
+                      thumbnailField="image_url"
+                      shouldTrackClickThrough
+                    />
+                  }
+                  bodyHeader={
+                    <React.Fragment>
+                      {wasSearched && <PagingInfo />}
+                      {wasSearched && <ResultsPerPage />}
+                    </React.Fragment>
+                  }
+                  bodyFooter={<Paging />}
+                />
+              </ErrorBoundary>
+            </div>
+          );
+        }}
+      </WithSearch>
+    </SearchProvider>
   );
 }
-
-export default App;
